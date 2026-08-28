@@ -20,7 +20,8 @@ doğarsa temel hazır — ancak **deploy edilmez**.
 ## Yayın mimarisi
 
 - Barındırma: GitHub Pages (public depo, ücretsiz plan).
-- Adres: proje sayfası, `https://<KULLANICI>.github.io/<DEPO>/`.
+- Depo: <https://github.com/berkayturan07/b-photo>
+- Adres: <https://berkayturan07.github.io/b-photo/>
 - Tetikleyici: `main` dalına her push; ayrıca Actions sekmesinden elle
   (`workflow_dispatch`).
 - Workflow: `.github/workflows/deploy.yml`.
@@ -35,7 +36,7 @@ bu paketin yeşil olduğundan emin ol.
 
 ## Alt dizin (base) ayarı
 
-Proje sayfasında uygulama kökte değil `/<DEPO>/` altında servis edilir. Bu yüzden
+Proje sayfasında uygulama kökte değil `/b-photo/` altında servis edilir. Bu yüzden
 Vite'ın `base` değeri doğru olmalıdır, aksi hâlde JS/CSS 404 döner ve sayfa boş
 açılır.
 
@@ -49,21 +50,32 @@ açılır.
 - Marka bağlantısı sabit `href="/"` yerine `import.meta.env.BASE_URL` kullanır
   (`App.vue`), böylece alt dizinde de kendi sayfasına döner.
 
-## İlk kurulum (tek seferlik)
+## İlk kurulum
 
-1. GitHub'da **public** ve **boş** bir depo aç (README/lisans/gitignore ekleme).
-2. Proje kökünde remote'u bağla ve gönder:
+Bu adımlar 28 Ağustos 2026'da tamamlandı; tekrar yapılması gerekmez. Depo
+sıfırdan yeniden kurulursa sıra şudur:
+
+1. Public ve boş bir depo aç (README/lisans/gitignore ekletme):
 
    ```powershell
-   git remote add origin https://github.com/<KULLANICI>/<DEPO>.git
-   git push -u origin main
+   gh repo create b-photo --public --source=. --remote=origin --push
    ```
 
-3. Depo → **Settings → Pages** → *Build and deployment* → **Source: GitHub
-   Actions** seç. (Bu adım şart; varsayılan "Deploy from a branch" seçiliyken
-   workflow yayın yapamaz.)
-4. **Actions** sekmesinden "Deploy to GitHub Pages" çalışmasını izle. Yeşil
-   olduğunda adres `deploy` işinin özetinde görünür.
+2. Pages kaynağını **GitHub Actions** yap. Bu adım şart; varsayılan "Deploy from
+   a branch" seçiliyken workflow yayın yapamaz.
+
+   ```powershell
+   gh api --method POST repos/<KULLANICI>/b-photo/pages -f build_type=workflow
+   ```
+
+   Aynısı arayüzden: Settings → Pages → *Build and deployment* → Source: GitHub
+   Actions.
+
+3. Çalışmayı izle: `gh run watch`.
+
+`gh auth login` yaparken **`--scopes repo,workflow` verilmelidir**. `workflow`
+yetkisi olmayan bir token `.github/workflows/` altındaki dosyaları push edemez;
+GitHub push'u doğrudan reddeder.
 
 İlk yayının erişilebilir olması birkaç dakika sürebilir.
 
@@ -82,10 +94,10 @@ git push
 Alt dizinli build'i yayına çıkmadan denemek için:
 
 ```powershell
-$env:BASE_PATH = '/<DEPO>/'
+$env:BASE_PATH = '/b-photo/'
 cd frontend
 npm run build
-npx vite preview --base /<DEPO>/
+npx vite preview --base /b-photo/
 ```
 
 Ardından `$env:BASE_PATH = $null` ile ortam değişkenini temizle; aksi hâlde aynı
@@ -93,9 +105,6 @@ PowerShell oturumundaki sonraki `npm run dev` de alt dizin varsayar.
 
 ## Bilinen sınırlar ve sonraki adımlar
 
-- **Favicon yok.** `index.html` bir ikon bildirmiyor; tarayıcı sekmesinde
-  varsayılan simge çıkar. `frontend/app/public/` altına bir ikon konup
-  `<link rel="icon">` eklenebilir.
 - **Analytics ve hata takibi yok.** Local-first gizlilik duruşuyla uyumlu;
   eklenirse gizlilik metni gözden geçirilmelidir.
 - **Özel alan adı** istenirse `frontend/app/public/CNAME` dosyası eklenir, DNS'te
