@@ -1,0 +1,75 @@
+name: Deploy to GitHub Pages
+
+# B Photo tamamen local-first çalışır; frontend Django API'sine istek atmaz.
+# Bu yüzden yayın için statik dosyaları üretip GitHub Pages'e yüklemek yeterlidir.
+# backend/ deposunda durur ama deploy edilmez.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Aynı anda tek bir yayın çalışsın; sıradaki push öncekini iptal etmesin.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Depoyu al
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Bağımlılıkları kur
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript kontrolü
+        run: npm run typecheck
+
+      - name: Vitest
+        run: npm test
+
+      - name: Production build
+        # Proje sayfasında uygulama /<depo-adı>/ altında servis edilir.
+        # Depo adı değişirse burası kendiliğinden güncellenir.
+        run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}/
+
+      - name: Pages yapılandırması
+        uses: actions/configure-pages@v5
+
+      - name: Build çıktısını yükle
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: frontend/app/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: GitHub Pages'e yayınla
+        id: deployment
+        uses: actions/deploy-pages@v4
