@@ -19,5 +19,11 @@ frontend/app/test-results/
 
 .claude/settings.local.json
 
+# Yerel AI ajan bağlamı ve iç planlama notları; depoya girmez.
+AGENTS.md
+CLAUDE.md
+docs/development-handoff.md
+ilan-gorseli-hazirlama-studyosu-plan.md
+
 .DS_Store
 Thumbs.db
