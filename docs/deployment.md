@@ -110,10 +110,11 @@ PowerShell oturumundaki sonraki `npm run dev` de alt dizin varsayar.
 - **Özel alan adı** istenirse `frontend/app/public/CNAME` dosyası eklenir, DNS'te
   A/ALIAS kaydı GitHub Pages IP'lerine yönlendirilir ve `BASE_PATH` kaldırılarak
   `base` `/` bırakılır.
-- **Depo public'tir.** Kaynak kod, plan belgesi ve devir notları herkese açıktır;
-  bunlarda müşteri adı veya özel bilgi bulunmamalıdır. Kök dizindeki örnek
-  görseller (`Bant_Logo_Sahibinden.*`, `wp_canli_destek_1-ilan-matik.jpg`) de
-  yayımlanır.
+- **Depo public'tir.** Kaynak kod herkese açıktır ve müşteri adı veya özel bilgi
+  içermemelidir. Ajan talimatları (`AGENTS.md`, `CLAUDE.md`), devir notu, ürün
+  planı ve kök dizindeki deneme görselleri (`Bant_Logo_Sahibinden.*`,
+  `wp_canli_destek_1-ilan-matik.jpg`) bilinçli olarak depo dışındadır;
+  `.gitignore` ile hariç tutulur ve yalnız yerel çalışma kopyasında durur.
 - Ücretsiz planda GitHub Pages yalnız public depolarda çalışır. Depo private
   yapılacaksa GitHub Pro gerekir ya da Cloudflare Pages / Netlify gibi bir
   alternatife geçilir; her ikisinde de aynı `dist` çıktısı ve `BASE_PATH`
